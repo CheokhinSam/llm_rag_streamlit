@@ -5,3 +5,5 @@ langchain_ollama
 pypdf
 faiss-cpu
 chroma
+unstructured
+unstructured[all-docs]
