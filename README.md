@@ -11,4 +11,4 @@ pip install -r requirements.txt
 ollama pull deepseek-r1:1.5b
 
 4. run the program
-streamlit run app.py
+streamlit run main.py
