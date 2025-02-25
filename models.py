@@ -1,4 +1,4 @@
-from langchain_community.document_loaders import PyPDFLoader, TextLoader, Docx2txtLoader, UnstructuredFileLoader 
+from langchain_community.document_loaders import UnstructuredFileLoader 
 from langchain_ollama.llms import OllamaLLM
 from langchain_ollama import OllamaEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -24,15 +24,6 @@ def upload_file(file):
 def create_vector_store(file_path):
     loader = UnstructuredFileLoader(file_path) 
     documents = loader.load()
-    """    if file_path.lower().endswith('.pdf'):
-            loader = PyPDFLoader(file_path)
-        elif file_path.lower().endswith('.txt'):
-            loader = TextLoader(file_path)
-        elif file_path.lower().endswith(('.doc', '.docx')):
-            loader = Docx2txtLoader(file_path)
-        else:
-            raise ValueError(f"Unsupported file type: {file_path}")"""
-    
     
     text_splitter =RecursiveCharacterTextSplitter(
         chunk_size=2000,
