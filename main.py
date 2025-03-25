@@ -4,30 +4,33 @@ from pathlib import Path
 
 st.set_page_config(page_title="RAG Q&A System", layout="wide")
 
-st.title("RAG project with DeepSeek-r1:1.5B")
+st.title("RAG project")
 
 with st.sidebar:
     st.header("Instructions")
     st.markdown("""
-    1. Upload the file by using the uploader.
-    2. Ask questions related to the document.
-    3. The system will retrieve content and provide a concise answer.""")
+    1. Select the LLM and Embedding model.            
+    2. Upload the file by using the uploader.
+    3. Ask questions related to the document.
+    4. The system will retrieve content and provide a concise answer.""")
 
     st.header("Settings")
-    st.markdown("""
-    - LLM : DeepSeek-R1:1.5B
-    - Embedding Model : DeepSeek-R1:1.5B
+    llm_model = st.selectbox("Select LLM Model", ["deepseek-r1:1.5b", "qwen2:latest"])
+    embedding_model = st.selectbox("Select Embedding Model", ["deepseek-r1:1.5b", "nomic-embed-text:latest"])
+    st.markdown(f"""
+    - LLM : {llm_model}
+    - Embedding Model : {embedding_model}
     - Retriever Type : Similarity Search
     """)
 
 st.header("Upload Files")
 uploaded_files = st.file_uploader(
     "Upload your files here",
-    accept_multiple_files=True,  # 允許上傳多個檔案
+    type=["pdf", "docx", "txt", "png", "jpg", "csv", "md"],
+    accept_multiple_files=True,
     help="You can upload multiple files at once"
 )
-
-
+file_paths = []
 
 # 處理上傳檔案
 if uploaded_files:
@@ -41,7 +44,7 @@ if uploaded_files:
                 file_paths.append(str(file_path))
             
             # 假設 create_vector_store 可以處理多個檔案路徑，若不行需調整 models 模組
-            db = models.create_vector_store(file_paths)
+            db = models.create_vector_store(file_paths, embedding_model=embedding_model)
         st.success(f"{len(uploaded_files)} file(s) processed successfully!")
 
         # 聊天介面
@@ -66,7 +69,7 @@ if uploaded_files:
             # 生成並顯示回答
             with st.spinner("Generating answer..."):
                 related_docs = models.retrieve_docs(db, question)
-                answer = models.question_file(question, related_docs)
+                answer = models.question_file(question, related_docs, llm_model)
             with st.chat_message("assistant"):
                 st.write(answer)
             st.session_state.messages.append({"role": "assistant", "content": answer})
